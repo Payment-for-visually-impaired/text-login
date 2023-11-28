@@ -2,6 +2,10 @@
 
 ![localhost_3000_ (2)](https://user-images.githubusercontent.com/75136330/212552636-ad154d82-2358-4de7-b6b5-c6e68c8b918e.png)
 
+Once you have the clone , then run "npm install " in terminal rhen "npm start" to get the website working on local device
+
+
+
 
 # Getting Started with Create React App
 
