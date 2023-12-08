@@ -1,0 +1,13 @@
+intent('start', p => {
+  p.play('let us start');
+});
+
+intent('phone number is $(PH)', p => {
+  p.play({ command: "enterPhoneNumber", value: p.PH.value });
+  p.play("your phone number is $(PH.value)");
+});
+
+intent('otp is $(OTP)', p => {
+  p.play({ command: "enterOTP", value: p.OTP.value });
+  p.play("your otp is $(OTP.value)");
+});
