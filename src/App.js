@@ -1,30 +1,37 @@
-import React, { useState } from "react";
 import { BsFillShieldLockFill, BsTelephoneFill } from "react-icons/bs";
 import { CgSpinner } from "react-icons/cg";
+
 import OtpInput from "otp-input-react";
+import { useState,useEffect } from "react";
+import alanBtn from '@alan-ai/alan-sdk-web';
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { auth } from "./firebase.config";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { toast, Toaster } from "react-hot-toast";
-import AlanContainer from "./AlanContainer";
 
 const App = () => {
-  const [otp, setOtp] = useState("");
-  const [ph, setPh] = useState("");
+  const [otp, setOTP] = useState("");
+  const [ph, setPhone] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showOTP, setShowOTP] = useState(false);
   const [user, setUser] = useState(null);
-
-  const handleEnterPhoneNumber = (phoneNumber) => {
-    setPh(phoneNumber);
-  };
-
-  const handleEnterOTP = (enteredOTP) => {
-    setOtp(enteredOTP);
-  };
-
-  const onCaptchVerify = () => {
+  const ALAN_Key='cf832a1e8c30c5678843576de5b2f7c52e956eca572e1d8b807a3e2338fdd0dc/stage'
+  useEffect(() => {
+    alanBtn({
+        key: ALAN_Key,
+        onCommand: (commandData) => {
+          if(commandData.command === 'phone'){
+            const formattedPhoneNumber = `+91 ${commandData.data}`;
+            setPhone(formattedPhoneNumber);
+          }
+          if(commandData.command==='otp'){
+            setOTP(commandData.data)
+          }
+        }
+    });
+  }, []);
+  function onCaptchVerify() {
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(
         "recaptcha-container",
@@ -38,9 +45,9 @@ const App = () => {
         auth
       );
     }
-  };
+  }
 
-  const onSignup = () => {
+  function onSignup() {
     setLoading(true);
     onCaptchVerify();
 
@@ -53,15 +60,15 @@ const App = () => {
         window.confirmationResult = confirmationResult;
         setLoading(false);
         setShowOTP(true);
-        toast.success("OTP sent successfully!");
+        toast.success("OTP sended successfully!");
       })
       .catch((error) => {
         console.log(error);
         setLoading(false);
       });
-  };
+  }
 
-  const onOTPVerify = () => {
+  function onOTPVerify() {
     setLoading(true);
     window.confirmationResult
       .confirm(otp)
@@ -74,8 +81,8 @@ const App = () => {
         console.log(err);
         setLoading(false);
       });
-  };
-
+  }
+ 
   return (
     <section className="bg-emerald-500 flex items-center justify-center h-screen">
       <div>
@@ -88,7 +95,7 @@ const App = () => {
         ) : (
           <div className="w-80 flex flex-col gap-4 rounded-lg p-4">
             <h1 className="text-center leading-normal text-white font-medium text-3xl mb-6">
-              Welcome to <br /> CODE A PROGRAM
+              Welcome to <br /> OUR PAYMENT APP
             </h1>
             {showOTP ? (
               <>
@@ -103,12 +110,12 @@ const App = () => {
                 </label>
                 <OtpInput
                   value={otp}
-                  onChange={setOtp}
+                  onChange={setOTP}
                   OTPLength={6}
                   otpType="number"
                   disabled={false}
                   autoFocus
-                  className="otp-container"
+                  className="opt-container "
                 ></OtpInput>
                 <button
                   onClick={onOTPVerify}
@@ -125,10 +132,13 @@ const App = () => {
                 <div className="bg-white text-emerald-500 w-fit mx-auto p-4 rounded-full">
                   <BsTelephoneFill size={30} />
                 </div>
-                <label htmlFor="phoneInput" className="font-bold text-xl text-white text-center">
+                <label
+                  htmlFor=""
+                  className="font-bold text-xl text-white text-center"
+                >
                   Verify your phone number
                 </label>
-                <PhoneInput id="phoneInput" country={"in"} value={ph} onChange={setPh} />
+                <PhoneInput country={"in"} value={ph} onChange={setPhone} />
                 <button
                   onClick={onSignup}
                   className="bg-emerald-600 w-full flex gap-1 items-center justify-center py-2.5 text-white rounded"
@@ -143,7 +153,6 @@ const App = () => {
           </div>
         )}
       </div>
-      <div><AlanContainer onEnterPhoneNumber={handleEnterPhoneNumber} onEnterOTP={handleEnterOTP} /></div>
     </section>
   );
 };
