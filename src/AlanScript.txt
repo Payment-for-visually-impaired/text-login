@@ -1,0 +1,36 @@
+intent('My name is $(NAME)', (p) => {
+    if(p.NAME.value){
+        p.play({ 
+            command: 'name', 
+            data: p.NAME.value
+        });
+    }
+    else{
+        p.play(`Cannot read the name`);
+    }
+})
+
+const phoneNumber = "\\d{3}-\\d{3}-\\d{4}$";
+
+intent(`My phone number is $(PHONE* ${phoneNumber})`, (p) => {
+    if(p.PHONE.value){
+        p.play({ 
+            command: 'phone', 
+            data: p.PHONE.value
+        });
+    }
+    else{
+        p.play(`Cannot read the phone number`);
+    }
+})
+const otp = '\\d{6}';
+intent('My otp is $(OTP* ' + '\\d{6,}' + ')', (p) => {
+    if (p.OTP.value) {
+        p.play({ 
+            command: 'otp', 
+            data: p.OTP.value
+        });
+    } else {
+        p.play('Cannot read the OTP number');
+    }
+});
